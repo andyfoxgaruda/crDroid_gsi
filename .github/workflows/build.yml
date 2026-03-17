@@ -11,7 +11,6 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          # This deletes almost 100GB of useless pre-installed software
           df -h
 
       - name: Setup Build Tools
@@ -22,7 +21,7 @@ jobs:
       - name: Sync crDroid 16 (Baklava)
         run: |
           repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --depth=1
-          git clone https://github.com/naz664/treble_manifest.git .repo/local_manifests -b 16
+          git clone https://github.com/naz664/treble_manifest.git .repo/local_manifests -b 14
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
       - name: Build GSI Image
