@@ -21,7 +21,6 @@ jobs:
 
       - name: Sync crDroid 16 (Baklava)
         run: |
-          # We use 16.0 as the primary branch for crDroid 12.x
           repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --depth=1
           git clone https://github.com/naz664/treble_manifest.git .repo/local_manifests -b 16
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
