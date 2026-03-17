@@ -4,34 +4,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Free Disk Space
+      - name: Maximize Build Space
         run: |
-          sudo rm -rf /usr/local/lib/android # Delete old SDKs
-          sudo rm -rf /usr/share/dotnet # Delete .NET
-          sudo rm -rf /opt/ghc # Delete Haskell
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          df -h # Show us how much space we won
+          # This deletes almost 100GB of useless pre-installed software
+          df -h
 
-      - name: Setup Build Environment
+      - name: Setup Build Tools
         run: |
           sudo apt update
           sudo apt install -y repo git-lfs bc bison build-essential curl flex g++-multilib gcc-multilib gnupg gperf libxml2 libxml2-utils lzop rsync schedtool squashfs-tools
 
-      - name: Sync crDroid 16
+      - name: Sync crDroid 16 (Baklava)
         run: |
-          repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle
+          # We use 16.0 as the primary branch for crDroid 12.x
+          repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --depth=1
           git clone https://github.com/naz664/treble_manifest.git .repo/local_manifests -b 16
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-      - name: Build GSI
+      - name: Build GSI Image
         run: |
           . build/envsetup.sh
           lunch treble_arm64_bgN-userdebug
           make systemimage -j$(nproc --all)
 
-      - name: Upload Build
+      - name: Upload Finished GSI
         uses: actions/upload-artifact@v4
         with:
-          name: crDroid-12.7-GSI
+          name: crDroid-12.7-Infinix-G96
           path: out/target/product/phh_treble_arm64/system.img
